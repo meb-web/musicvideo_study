@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS 91249 Knowledge Organiser: Narrative in Music Video</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151e2e',
+                            900: '#0f172a',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                        serif: ['Merriweather', 'ui-serif', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { scroll-behavior: smooth; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 40vh;
+            max-height: 400px;
+        }
+        @media (max-width: 640px) {
+            .chart-container { height: 300px; }
+        }
+
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .flip-card-inner { transition: transform 0.6s; }
+        .flipped .flip-card-inner { transform: rotateY(180deg); }
+        
+        .tab-active { border-bottom-width: 4px; border-color: #f59e0b; color: #1f2937; font-weight: 700; }
+        .tab-inactive { border-bottom-width: 4px; border-color: transparent; color: #6b7280; font-weight: 500; }
+        .tab-inactive:hover { color: #374151; border-color: #d1d5db; }
+    </style>
+</head>
+
+<!-- Chosen Palette: Cinematic Slate & Amber (Slate 50/100/900, Amber 500/600, Zinc 800) -->
+<!-- Application Structure Plan: A side-navigation dashboard structure. This allows students to logically progress through the AS 91249 curriculum requirements (Theory -> Auteur Concept -> Textual Analysis -> Vocabulary -> Writing Frame) without losing their place. The layout features interactive tabs for comparing the two texts, a dynamic chart to visualize narrative tension, and flip-cards for active recall of vocabulary, optimizing the cognitive load for studying. -->
+<!-- Visualization & Content Choices: 
+1. Todorov's Theory -> Compare Traditional vs Subverted -> Chart.js Line Graph -> Interaction: Hover tooltips -> Justification: Visualizing abstract narrative arcs helps students grasp "Negative Equilibrium". (Canvas used, NO SVG).
+2. Textual Analysis (Just vs Da Funk) -> Organize & Compare -> Tabbed Interface -> Interaction: Click tabs to swap content -> Justification: Prevents endless scrolling; allows direct comparison of Denotation/Connotation/Implications. 
+3. Excellence Vocabulary -> Active Learning -> CSS Flip Cards -> Interaction: Click to reveal definition -> Justification: Flashcard UI promotes active retrieval practice. 
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<body class="bg-slate-50 text-slate-800 font-sans flex h-screen overflow-hidden">
+
+    <nav class="w-16 md:w-64 bg-slate-900 text-slate-300 flex flex-col h-full shadow-2xl z-20 transition-all duration-300 flex-shrink-0">
+        <div class="p-4 md:p-6 bg-slate-850 border-b border-slate-700 flex items-center justify-center md:justify-start">
+            <span class="text-2xl md:mr-3 text-amber-500">🎬</span>
+            <h1 class="hidden md:block text-xl font-bold text-white tracking-tight leading-tight">AS 91249<br><span class="text-sm font-normal text-slate-400">Media Narrative</span></h1>
+        </div>
+        <ul class="flex-1 overflow-y-auto hide-scrollbar py-4 space-y-2">
+            <li>
+                <a href="#section-theory" class="flex items-center px-4 md:px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors" onclick="navTo('section-theory')">
+                    <span class="text-xl md:mr-4">📖</span>
+                    <span class="hidden md:block font-medium">Core Theory</span>
+                </a>
+            </li>
+            <li>
+                <a href="#section-auteur" class="flex items-center px-4 md:px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors" onclick="navTo('section-auteur')">
+                    <span class="text-xl md:mr-4">🎥</span>
+                    <span class="hidden md:block font-medium">The Auteur</span>
+                </a>
+            </li>
+            <li>
+                <a href="#section-texts" class="flex items-center px-4 md:px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors" onclick="navTo('section-texts')">
+                    <span class="text-xl md:mr-4">🎵</span>
+                    <span class="hidden md:block font-medium">Text Analysis</span>
+                </a>
+            </li>
+            <li>
+                <a href="#section-vocab" class="flex items-center px-4 md:px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors" onclick="navTo('section-vocab')">
+                    <span class="text-xl md:mr-4">🧠</span>
+                    <span class="hidden md:block font-medium">Vocabulary</span>
+                </a>
+            </li>
+            <li>
+                <a href="#section-frame" class="flex items-center px-4 md:px-6 py-3 hover:bg-slate-800 hover:text-white transition-colors" onclick="navTo('section-frame')">
+                    <span class="text-xl md:mr-4">📝</span>
+                    <span class="hidden md:block font-medium">Writing Frame</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main id="main-content" class="flex-1 h-full overflow-y-auto scroll-smooth p-6 md:p-12 relative">
+        <header class="max-w-5xl mx-auto mb-12 border-b-2 border-slate-200 pb-8">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4 font-serif">Narrative in Music Video</h2>
+            <p class="text-xl text-slate-600 font-light border-l-4 border-amber-500 pl-4">Focus: Alienation and Subversion in the works of Jamie Thraves and Spike Jonze.</p>
+        </header>
+
+        <div class="max-w-5xl mx-auto space-y-24 pb-24">
+
+            <section id="section-theory" class="scroll-mt-12">
+                <div class="mb-8">
+                    <h3 class="text-3xl font-bold text-slate-800 mb-3 flex items-center"><span class="text-amber-500 mr-3">1.</span> Core Theory: Todorov's Narrative Structure</h3>
+                    <p class="text-lg text-slate-600">This section breaks down the foundational narrative framework used in Media Studies. Auteur directors frequently utilize these five chronological stages to establish audience expectations, purposefully subverting them in the final act to create deeper meaning.</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-md border border-slate-100 p-6 md:p-8 mb-8">
+                    <h4 class="text-xl font-bold mb-6 text-slate-800">Visualizing Narrative Tension</h4>
+                    <p class="text-slate-600 mb-6">Compare the "Traditional" Hollywood arc with the "Subverted" Auteur arc. Notice how the subverted narrative fails to return to a state of high stability.</p>
+                    
+                    <div class="chart-container">
+                        <canvas id="narrativeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:border-amber-400 transition-colors">
+                        <div class="text-amber-500 font-bold mb-2 text-sm uppercase tracking-wider">Stage 1</div>
+                        <h5 class="font-bold text-slate-900 mb-2">Equilibrium</h5>
+                        <p class="text-sm text-slate-600 mb-3">A state of balance/normality at the start.</p>
+                        <div class="bg-slate-50 p-3 rounded text-xs border-l-2 border-slate-300">
+                            <strong class="text-slate-700">Subverted Reality:</strong> Often depicted as the boring "Status Quo" or "Cogs in a machine."
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:border-amber-400 transition-colors">
+                        <div class="text-amber-500 font-bold mb-2 text-sm uppercase tracking-wider">Stage 2</div>
+                        <h5 class="font-bold text-slate-900 mb-2">Disruption</h5>
+                        <p class="text-sm text-slate-600 mb-3">An event that breaks the balance.</p>
+                        <div class="bg-slate-50 p-3 rounded text-xs border-l-2 border-slate-300">
+                            <strong class="text-slate-700">Subverted Reality:</strong> In these videos, the disruption is often a surreal or existential crisis.
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:border-amber-400 transition-colors">
+                        <div class="text-amber-500 font-bold mb-2 text-sm uppercase tracking-wider">Stage 3</div>
+                        <h5 class="font-bold text-slate-900 mb-2">Recognition</h5>
+                        <p class="text-sm text-slate-600 mb-3">Characters realize a disruption has occurred.</p>
+                        <div class="bg-slate-50 p-3 rounded text-xs border-l-2 border-slate-300">
+                            <strong class="text-slate-700">Subverted Reality:</strong> Characters often realize they cannot fix the problem.
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:border-amber-400 transition-colors">
+                        <div class="text-amber-500 font-bold mb-2 text-sm uppercase tracking-wider">Stage 4</div>
+                        <h5 class="font-bold text-slate-900 mb-2">Repair</h5>
+                        <p class="text-sm text-slate-600 mb-3">An attempt to restore order.</p>
+                        <div class="bg-slate-50 p-3 rounded text-xs border-l-2 border-slate-300">
+                            <strong class="text-slate-700">Subverted Reality:</strong> Attempts to fix the situation usually fail or result in tragedy.
+                        </div>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-sm border border-slate-200 hover:border-red-400 transition-colors ring-2 ring-red-100">
+                        <div class="text-red-500 font-bold mb-2 text-sm uppercase tracking-wider">Stage 5</div>
+                        <h5 class="font-bold text-slate-900 mb-2">New Equilibrium</h5>
+                        <p class="text-sm text-slate-600 mb-3">A final stable state (Happy/Order).</p>
+                        <div class="bg-red-50 p-3 rounded text-xs border-l-2 border-red-400 text-red-900">
+                            <strong>Negative Equilibrium:</strong> The world is permanently broken or isolated.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-auteur" class="scroll-mt-12 bg-slate-900 text-white rounded-2xl p-8 md:p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 text-9xl opacity-10">🎥</div>
+                <div class="relative z-10">
+                    <h3 class="text-3xl font-bold mb-6 flex items-center"><span class="text-amber-500 mr-3">2.</span> The Auteur & The "So What?"</h3>
+                    <p class="text-lg text-slate-300 mb-8 max-w-3xl">Understanding the director's unique vision is key to achieving Excellence. This section outlines how an Auteur's signature elevates a music video from a commercial product to cinematic art.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                            <h4 class="text-xl font-bold text-amber-500 mb-3 text-2xl">👤 What is an Auteur?</h4>
+                            <p class="text-slate-300 leading-relaxed">A director with a distinct "fingerprint" (signature style). They exercise immense creative control to transform music videos from "vacuous promos" into <strong class="text-white">cinematic art</strong>.</p>
+                        </div>
+                        <div class="bg-slate-800 p-6 rounded-xl border border-slate-700">
+                            <h4 class="text-xl font-bold text-amber-500 mb-3 text-2xl">🎯 The "So What?" Factor</h4>
+                            <p class="text-slate-300 leading-relaxed">Refusing a happy ending forces the audience from "passive consumption" to "active thought." This intentional disruption of expectations creates <strong class="text-white bg-amber-600 px-2 py-1 rounded text-sm ml-1">Intellectual Disequilibrium</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-texts" class="scroll-mt-12">
+                <div class="mb-8">
+                    <h3 class="text-3xl font-bold text-slate-800 mb-3 flex items-center"><span class="text-amber-500 mr-3">3.</span> Textual Analysis</h3>
+                    <p class="text-lg text-slate-600">Interact with the tabs below to explore detailed breakdowns of our two case studies. Each text is analyzed using the 3-step Excellence Writing Frame to demonstrate how narrative features construct meaning.</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
+                    <div class="flex border-b border-slate-200 bg-slate-50">
+                        <button class="flex-1 py-4 px-6 text-center text-lg tab-active transition-colors focus:outline-none" id="tab-btn-just" onclick="switchTab('just')">
+                            Radiohead - "Just" <br><span class="text-sm font-normal text-slate-500 block mt-1">Dir. Jamie Thraves</span>
+                        </button>
+                        <button class="flex-1 py-4 px-6 text-center text-lg tab-inactive transition-colors focus:outline-none border-l border-slate-200" id="tab-btn-dafunk" onclick="switchTab('dafunk')">
+                            Daft Punk - "Da Funk" <br><span class="text-sm font-normal text-slate-500 block mt-1">Dir. Spike Jonze</span>
+                        </button>
+                    </div>
+
+                    <div class="p-6 md:p-8" id="tab-content-just">
+                        <div class="flex flex-col md:flex-row justify-between items-start mb-8 pb-6 border-b border-slate-100">
+                            <div>
+                                <h4 class="text-2xl font-bold text-slate-900 font-serif">"Just"</h4>
+                                <p class="text-slate-500">Radiohead | Directed by Jamie Thraves</p>
+                            </div>
+                            <div class="mt-4 md:mt-0 bg-slate-100 px-4 py-2 rounded-lg text-right">
+                                <span class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Key Theme</span>
+                                <span class="text-slate-800 font-medium">Modern Nihilism & Collapse of Status Quo</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <span class="inline-block bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-bold mb-3 border border-amber-200">Feature: Narrative Enigma</span>
+                            <p class="text-slate-700 text-lg">The central mystery of why the man is lying down on the pavement drives the entire visual narrative.</p>
+                        </div>
+
+                        <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-600 font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">1</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                                    <h5 class="font-bold text-slate-800 mb-2">Denotation (Identify)</h5>
+                                    <p class="text-slate-600">A businessman lies on a city pavement. A crowd gathers and demands an answer through subtitles.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-amber-200 text-amber-700 font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">2</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                                    <h5 class="font-bold text-slate-800 mb-2">Connotation (Contribute)</h5>
+                                    <p class="text-slate-600">Suggests a <strong>rejection of normal life</strong>. The man represents a "lost soul" while the crowd represents "productive members of society."</p>
+                                </div>
+                            </div>
+
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-800 text-white font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">3</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-800 shadow-md ring-1 ring-slate-800">
+                                    <h5 class="font-bold text-slate-900 mb-2 flex items-center">Implications (Excellence) ⭐</h5>
+                                    <p class="text-slate-700 mb-2">The <strong>Short-term effect</strong> is confusion. The <strong>Long-term effect</strong> is the total collapse of the crowd's world.</p>
+                                    <div class="bg-amber-50 p-3 rounded text-sm border-l-2 border-amber-500 text-slate-800">
+                                        This <strong>subverts</strong> the traditional "resolved ending" to suggest the truth is so powerful it destroys the listener.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 md:p-8 hidden" id="tab-content-dafunk">
+                        <div class="flex flex-col md:flex-row justify-between items-start mb-8 pb-6 border-b border-slate-100">
+                            <div>
+                                <h4 class="text-2xl font-bold text-slate-900 font-serif">"Da Funk"</h4>
+                                <p class="text-slate-500">Daft Punk | Directed by Spike Jonze</p>
+                            </div>
+                            <div class="mt-4 md:mt-0 bg-slate-100 px-4 py-2 rounded-lg text-right">
+                                <span class="block text-xs uppercase tracking-wider text-slate-500 font-bold mb-1">Key Theme</span>
+                                <span class="text-slate-800 font-medium">Urban Alienation & Vulnerable Outsider</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-8">
+                            <span class="inline-block bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-bold mb-3 border border-amber-200">Feature: Character Construction</span>
+                            <p class="text-slate-700 text-lg">The surreal presentation of the "Dog-Man" protagonist navigating a highly realistic environment.</p>
+                        </div>
+
+                        <div class="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-200 text-slate-600 font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">1</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                                    <h5 class="font-bold text-slate-800 mb-2">Denotation (Identify)</h5>
+                                    <p class="text-slate-600">Charles is a man with a Labrador head, a broken leg, and a boombox. He walks through a realistic NYC that ignores him.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-amber-200 text-amber-700 font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">2</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-200 shadow-sm">
+                                    <h5 class="font-bold text-slate-800 mb-2">Connotation (Contribute)</h5>
+                                    <p class="text-slate-600">Suggests <strong>urban loneliness</strong>. He is a "vulnerable outsider" trying to find a connection in a cold, busy city.</p>
+                                </div>
+                            </div>
+
+                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                <div class="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-slate-800 text-white font-bold shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">3</div>
+                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-5 rounded-lg border border-slate-800 shadow-md ring-1 ring-slate-800">
+                                    <h5 class="font-bold text-slate-900 mb-2 flex items-center">Implications (Excellence) ⭐</h5>
+                                    <p class="text-slate-700 mb-2">The <strong>Short-term effect</strong> is awkwardness. The <strong>Long-term effect</strong> is <strong>Permanent Isolation</strong>. He chooses his identity (boombox) over connection (Beatrice).</p>
+                                    <div class="bg-amber-50 p-3 rounded text-sm border-l-2 border-amber-500 text-slate-800">
+                                        This <strong>subverts</strong> the "star-vehicle" promo to critique a society that has no room for the idiosyncratic individual.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-vocab" class="scroll-mt-12">
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between">
+                    <div class="max-w-2xl">
+                        <h3 class="text-3xl font-bold text-slate-800 mb-3 flex items-center"><span class="text-amber-500 mr-3">4.</span> Excellence Vocabulary</h3>
+                        <p class="text-lg text-slate-600">Click the flashcards below to reveal the definitions of high-level terminology needed for perceptive analysis.</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 inline-block text-center">
+                        ⟳ Click to Flip
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Verisimilitude</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">The appearance of being "real."</p>
+                                <p class="text-xs text-slate-400 mt-2 italic">(e.g., Jonze's realistic setting for a surreal dog-man).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Existential Displacement</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">A feeling of not belonging in the world or the system.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Status Quo</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">The existing state of affairs (the "normal" rules of society).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Cogs in a Machine</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">Individuals who are just part of a larger, unfeeling system.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Circular Narrative</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">A story that ends where it began, suggesting no growth or escape is possible.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="perspective-1000 h-48 cursor-pointer group" onclick="this.classList.toggle('flipped')">
+                        <div class="flip-card-inner relative w-full h-full text-center transform-style-3d rounded-xl shadow-md border border-slate-200">
+                            <div class="absolute w-full h-full backface-hidden bg-white flex items-center justify-center p-6 rounded-xl">
+                                <h4 class="text-xl font-bold text-slate-800">Ontological</h4>
+                            </div>
+                            <div class="absolute w-full h-full backface-hidden bg-slate-800 text-white flex flex-col items-center justify-center p-6 rounded-xl rotate-y-180 border-b-4 border-amber-500">
+                                <p class="text-sm md:text-base">Dealing with the nature of being or existence itself.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="section-frame" class="scroll-mt-12 bg-slate-100 rounded-2xl p-6 md:p-10 border border-slate-200">
+                <div class="mb-8">
+                    <h3 class="text-3xl font-bold text-slate-800 mb-3 flex items-center"><span class="text-amber-500 mr-3">5.</span> The Excellence Writing Frame</h3>
+                    <p class="text-lg text-slate-600">Use this 3-step scaffold to structure your paragraphs in the final assessment. Follow the sentence starters to ensure you cover all necessary criteria.</p>
+                </div>
+
+                <div class="flex flex-col space-y-4">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-8 border-slate-400 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                        <div class="bg-slate-100 text-slate-600 font-bold px-4 py-2 rounded text-lg shrink-0 w-full md:w-32 text-center">Step 1</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-lg mb-1">Identify & Describe (Achieved)</h4>
+                            <p class="text-slate-600 font-mono text-sm bg-slate-50 p-2 rounded">“A significant feature is... the denotation of this is exactly what is seen/heard...”</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-8 border-amber-400 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                        <div class="bg-amber-100 text-amber-700 font-bold px-4 py-2 rounded text-lg shrink-0 w-full md:w-32 text-center">Step 2</div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-lg mb-1">Contribution (Merit)</h4>
+                            <p class="text-slate-600 font-mono text-sm bg-slate-50 p-2 rounded">“The connotation suggests... This creates tension because...”</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800 p-6 rounded-xl shadow-md border-l-8 border-amber-500 flex flex-col md:flex-row gap-4 items-start md:items-center">
+                        <div class="bg-amber-500 text-slate-900 font-bold px-4 py-2 rounded text-lg shrink-0 w-full md:w-32 text-center">Step 3</div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg mb-1">Examining Implications (Excellence)</h4>
+                            <p class="text-slate-300 font-mono text-sm bg-slate-900 p-2 rounded border border-slate-700">“In a traditional story... however, this subverts expectations by... the long-term effect is... this reinforces the theme of...”</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function navTo(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function switchTab(tabName) {
+            const btnJust = document.getElementById('tab-btn-just');
+            const btnDaFunk = document.getElementById('tab-btn-dafunk');
+            const contentJust = document.getElementById('tab-content-just');
+            const contentDaFunk = document.getElementById('tab-content-dafunk');
+
+            if (tabName === 'just') {
+                btnJust.className = 'flex-1 py-4 px-6 text-center text-lg tab-active transition-colors focus:outline-none';
+                btnDaFunk.className = 'flex-1 py-4 px-6 text-center text-lg tab-inactive transition-colors focus:outline-none border-l border-slate-200';
+                contentJust.classList.remove('hidden');
+                contentDaFunk.classList.add('hidden');
+            } else {
+                btnDaFunk.className = 'flex-1 py-4 px-6 text-center text-lg tab-active transition-colors focus:outline-none border-l border-slate-200';
+                btnJust.className = 'flex-1 py-4 px-6 text-center text-lg tab-inactive transition-colors focus:outline-none';
+                contentDaFunk.classList.remove('hidden');
+                contentJust.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('narrativeChart').getContext('2d');
+            
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1. Equilibrium', '2. Disruption', '3. Recognition', '4. Repair', '5. New Equilibrium'],
+                    datasets: [
+                        {
+                            label: 'Traditional Hollywood Narrative',
+                            data: [3, 8, 7, 9, 2], 
+                            borderColor: '#94a3b8',
+                            backgroundColor: 'rgba(148, 163, 184, 0.1)',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#94a3b8',
+                            pointRadius: 4,
+                            fill: true
+                        },
+                        {
+                            label: 'Subverted Narrative (Auteur)',
+                            data: [3, 8, 8, 6, 9], 
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.05)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            pointBackgroundColor: '#ef4444',
+                            pointBorderColor: '#fff',
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: { weight: 'bold' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { size: 14, family: "'Inter', sans-serif" },
+                            bodyFont: { size: 13, family: "'Inter', sans-serif" },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    
+                                    const index = context.dataIndex;
+                                    const isSubverted = context.datasetIndex === 1;
+                                    
+                                    if(index === 0) return label + "Status Quo established";
+                                    if(index === 1) return label + "Conflict spikes";
+                                    if(index === 4 && isSubverted) return label + "Negative Equilibrium (Tension remains high)";
+                                    if(index === 4 && !isSubverted) return label + "Order Restored (Tension drops)";
+                                    
+                                    return label + "Tension level " + context.parsed.y;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: true,
+                            title: { display: true, text: 'Narrative Tension / Conflict', font: { weight: 'bold' } },
+                            min: 0,
+                            max: 10,
+                            grid: { color: '#f1f5f9' },
+                            ticks: { display: false } 
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { weight: '500' } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
